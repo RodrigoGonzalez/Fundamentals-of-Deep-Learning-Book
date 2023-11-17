@@ -22,9 +22,8 @@ def save_model(model, directory):
     # And pickling model object, witout data
     vocab, syn0norm, syn0, index2word = model.vocab, model.syn0norm, model.syn0, model.index2word
     model.vocab, model.syn0norm, model.syn0, model.index2word = None, None, None, None
-    model_f = open(os.path.join(directory, 'model.pickle'), 'w')
-    pickle.dump(model, model_f)
-    model_f.close()
+    with open(os.path.join(directory, 'model.pickle'), 'w') as model_f:
+        pickle.dump(model, model_f)
     model.vocab, model.syn0norm, model.syn0, model.index2word = vocab, syn0norm, syn0, index2word
 
 def load_model(directory):
@@ -52,11 +51,10 @@ class DBMPickledDict(dict):
             key = str(key)
         return key in self._dbm
     def __getitem__(self, key):
-        if isinstance(key, int):
-            key = str(key)
-            return self._dbm[key]
-        else:
+        if not isinstance(key, int):
             return pickle.loads(self._dbm[key])
+        key = str(key)
+        return self._dbm[key]
     def keys(self):
         return self._dbm.keys()
     def values(self):

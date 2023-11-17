@@ -131,7 +131,7 @@ class _FileEditRecorder(object):
       # Finish the report comment
       change_report += "         %s\n" % "".join(change_list)
       text[line - 1] = "".join(char_array)
-      change_report += "    New: %s" % (text[line - 1])
+      change_report += f"    New: {text[line - 1]}"
       change_report += "         %s\n\n" % "".join(change_list_new)
     return "".join(text), change_report, self._errors
 
@@ -228,10 +228,7 @@ class _ASTCallVisitor(ast.NodeVisitor):
         # Reverse the text to and regular expression search for whitespace
         text = self._lines[line-1]
         reversed_preceding_text = text[:col][::-1]
-        # First find if a [ can be found with only whitespace between it and
-        # col.
-        m = find_open.match(reversed_preceding_text)
-        if m:
+        if m := find_open.match(reversed_preceding_text):
           new_col_offset = col - m.start(1) - 1
           return line, new_col_offset
         else:
@@ -301,9 +298,14 @@ class _ASTCallVisitor(ast.NodeVisitor):
             if (full_name in function_keyword_renames and
                 keyword_arg in function_keyword_renames[full_name]):
               keyword_arg = function_keyword_renames[full_name][keyword_arg]
-            self._file_edit.add("Added keyword %r to reordered function %r"
-                                % (reordered[idx], full_name), lineno,
-                                col_offset, "", keyword_arg + "=")
+            self._file_edit.add(
+                "Added keyword %r to reordered function %r" %
+                (reordered[idx], full_name),
+                lineno,
+                col_offset,
+                "",
+                f"{keyword_arg}=",
+            )
 
       # Examine each keyword argument and convert it to the final renamed form
       renamed_keywords = ({} if full_name not in function_keyword_renames else
@@ -321,13 +323,15 @@ class _ASTCallVisitor(ast.NodeVisitor):
             # value.
             key_start = argval_col_offset - len(argkey) - 1
             key_end = key_start + len(argkey) + 1
-            if (self._lines[argval_lineno - 1][key_start:key_end] ==
-                argkey + "="):
-              self._file_edit.add("Renamed keyword argument from %r to %r" %
-                                  (argkey, renamed_keywords[argkey]),
-                                  argval_lineno,
-                                  argval_col_offset - len(argkey) - 1,
-                                  argkey + "=", renamed_keywords[argkey] + "=")
+            if self._lines[argval_lineno - 1][key_start:key_end] == f"{argkey}=":
+              self._file_edit.add(
+                  "Renamed keyword argument from %r to %r" %
+                  (argkey, renamed_keywords[argkey]),
+                  argval_lineno,
+                  argval_col_offset - len(argkey) - 1,
+                  f"{argkey}=",
+                  f"{renamed_keywords[argkey]}=",
+              )
               continue
           self._file_edit.add(
               "Failed to rename keyword argument from %r to %r" %
@@ -350,7 +354,7 @@ class _ASTCallVisitor(ast.NodeVisitor):
       self._rename_functions(node, full_name)
     if full_name in self._api_change_spec.change_to_function:
       if not hasattr(node, "is_function_for_call"):
-        new_text = full_name + "()"
+        new_text = f"{full_name}()"
         self._file_edit.add("Changed %r to %r"%(full_name, new_text),
                             node.lineno, node.col_offset, full_name, new_text)
 
@@ -362,8 +366,9 @@ class ASTCodeUpgrader(object):
 
   def __init__(self, api_change_spec):
     if not isinstance(api_change_spec, APIChangeSpec):
-      raise TypeError("Must pass APIChangeSpec to ASTCodeUpgrader, got %s" %
-                      type(api_change_spec))
+      raise TypeError(
+          f"Must pass APIChangeSpec to ASTCodeUpgrader, got {type(api_change_spec)}"
+      )
     self._api_change_spec = api_change_spec
 
   def process_file(self, in_filename, out_filename):

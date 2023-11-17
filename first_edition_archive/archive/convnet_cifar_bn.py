@@ -138,15 +138,13 @@ def inference(x, keep_prob, phase_train):
 
 
 def loss(output, y):
-    xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(output, tf.cast(y, tf.int64))    
-    loss = tf.reduce_mean(xentropy)
-    return loss
+  xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(output, tf.cast(y, tf.int64))
+  return tf.reduce_mean(xentropy)
 
 def training(cost, global_step):
-    tf.scalar_summary("cost", cost)
-    optimizer = tf.train.AdamOptimizer(learning_rate)
-    train_op = optimizer.minimize(cost, global_step=global_step)
-    return train_op
+  tf.scalar_summary("cost", cost)
+  optimizer = tf.train.AdamOptimizer(learning_rate)
+  return optimizer.minimize(cost, global_step=global_step)
 
 def evaluate(output, y):
     correct_prediction = tf.equal(tf.cast(tf.argmax(output, 1), dtype=tf.int32), y)

@@ -181,18 +181,16 @@ class DQNAgent(object):
 
     def sample_action_from_distribution(self, 
       action_distribution, epsilon_percentage):
-        # Choose an action based on the action probability 
-        # distribution
-        action = epsilon_greedy_action_annealed(
-            action_distribution, epsilon_percentage)
-        return action
+        return epsilon_greedy_action_annealed(
+            action_distribution, epsilon_percentage
+        )
 
     def predict_action(self, state, epsilon_percentage):
         action_distribution = self.session.run(
             self.q_t, feed_dict={self.s_t: [state]})[0]
-        action = self.sample_action_from_distribution(
-            action_distribution, epsilon_percentage)
-        return action
+        return self.sample_action_from_distribution(
+            action_distribution, epsilon_percentage
+        )
 
     def process_state_into_stacked_frames(self, frame, 
       past_frames, past_state=None):
@@ -224,8 +222,7 @@ class DQNAgent(object):
         grayscaled = self.to_grayscale(cropped)
         resized = imresize(grayscaled, shape, 'nearest').astype('float32')
         mean, std = 40.45, 64.15
-        frame = (resized-mean)/std
-        return frame
+        return (resized-mean)/std
 
 class ExperienceReplayTable(object):
 

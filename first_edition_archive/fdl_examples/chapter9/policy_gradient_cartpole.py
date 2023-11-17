@@ -129,9 +129,9 @@ class PGAgent(object):
     def predict_action(self, state, epsilon_percentage):
         action_distribution = self.session.run(
             self.output, feed_dict={self.state: [state]})[0]
-        action = self.sample_action_from_distribution(
-            action_distribution, epsilon_percentage)
-        return action
+        return self.sample_action_from_distribution(
+            action_distribution, epsilon_percentage
+        )
 
 class EpisodeHistory(object):
 
@@ -186,7 +186,6 @@ def main():
 
     env = gym.make('CartPole-v0')
     state_size = env.observation_space.shape[0]  # 4 for 
-                                                 # CartPole-v0
     num_actions = env.action_space.n  # 2 for CartPole-v0
 
     solved = False
@@ -209,7 +208,7 @@ def main():
             episode_history = EpisodeHistory()
             epsilon_percentage = float(min(i/float(
               epsilon_stop), 1.0))
-            for j in range(max_episode_length):
+            for _ in range(max_episode_length):
                 action = agent.predict_action(state, 
                   epsilon_percentage)
 
@@ -245,10 +244,7 @@ def main():
                     break
 
             if i % 10:
-                if np.mean(episode_rewards[:-100]) > 100.0:
-                    solved = True
-                else:
-                    solved = False
+                solved = np.mean(episode_rewards[:-100]) > 100.0
         print('Solved:', solved, 'Mean Reward', np.mean(episode_rewards[:-100]))
 
 main()

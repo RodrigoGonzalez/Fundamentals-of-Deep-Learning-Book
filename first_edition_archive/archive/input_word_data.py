@@ -41,7 +41,7 @@ def maybe_download(filename, expected_bytes):
   else:
     print(statinfo.st_size)
     raise Exception(
-        'Failed to verify ' + filename + '. Can you get to it with a browser?')
+        f'Failed to verify {filename}. Can you get to it with a browser?')
   return filename
 
 filename = maybe_download('text8.zip', 31344016)
@@ -67,7 +67,7 @@ def build_dataset(words):
   dictionary = dict()
   for word, _ in count:
     dictionary[word] = len(dictionary)
-  data = list()
+  data = []
   unk_count = 0
   for word in words:
     if word in dictionary:

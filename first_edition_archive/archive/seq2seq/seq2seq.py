@@ -168,13 +168,14 @@ def attention_decoder(decoder_inputs,
   if not decoder_inputs:
     raise ValueError("Must provide at least 1 input to attention decoder.")
   if attention_states.get_shape()[2].value is None:
-    raise ValueError("Shape[2] of attention_states must be known: %s" %
-                     attention_states.get_shape())
+    raise ValueError(
+        f"Shape[2] of attention_states must be known: {attention_states.get_shape()}"
+    )
   if output_size is None:
     output_size = cell.output_size
 
   with variable_scope.variable_scope(
-      scope or "attention_decoder", dtype=dtype) as scope:
+        scope or "attention_decoder", dtype=dtype) as scope:
     dtype = scope.dtype
 
     batch_size = array_ops.shape(decoder_inputs[0])[0]  # Needed for reshaping.
@@ -239,7 +240,7 @@ def attention_decoder(decoder_inputs,
       # Merge input and previous attentions into one vector of the right size.
       input_size = inp.get_shape().with_rank(2)[1]
       if input_size.value is None:
-        raise ValueError("Could not infer input size from input: %s" % inp.name)
+        raise ValueError(f"Could not infer input size from input: {inp.name}")
       x = linear([inp] + attns, input_size, True)
       # Run the RNN.
       cell_output, state = cell(x, state)

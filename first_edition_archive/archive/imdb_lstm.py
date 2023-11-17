@@ -14,8 +14,7 @@ def embedding_layer(input, weight_shape):
     # E_tiled= tf.tile(E_exp, [32, 1, 1])
     # return tf.batch_matmul(input, E_exp)
     incoming = tf.cast(input, tf.int32)
-    embeddings = tf.nn.embedding_lookup(E, incoming)
-    return embeddings
+    return tf.nn.embedding_lookup(E, incoming)
 
 def lstm(input, hidden_dim, keep_prob, phase_train):
         lstm = tf.nn.rnn_cell.BasicLSTMCell(hidden_dim)
@@ -61,8 +60,7 @@ def layer(input, weight_shape, bias_shape, phase_train):
 def inference(input, phase_train):
     embedding = embedding_layer(input, [30000, 512])
     lstm_output = lstm(embedding, 512, 0.5, phase_train)
-    output = layer(lstm_output, [512, 2], [2], phase_train)
-    return output
+    return layer(lstm_output, [512, 2], [2], phase_train)
 
 def loss(output, y):
     xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)
@@ -74,8 +72,7 @@ def loss(output, y):
 def training(cost, global_step):
     optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08,
         use_locking=False, name='Adam')
-    train_op = optimizer.minimize(cost, global_step=global_step)
-    return train_op
+    return optimizer.minimize(cost, global_step=global_step)
 
 def evaluate(output, y):
     correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))

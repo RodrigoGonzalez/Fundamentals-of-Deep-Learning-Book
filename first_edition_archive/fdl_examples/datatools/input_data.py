@@ -72,9 +72,7 @@ def extract_labels(filename, one_hot=False):
     num_items = _read32(bytestream)
     buf = bytestream.read(num_items)
     labels = numpy.frombuffer(buf, dtype=numpy.uint8)
-    if one_hot:
-      return dense_to_one_hot(labels)
-    return labels
+    return dense_to_one_hot(labels) if one_hot else labels
 class DataSet(object):
   def __init__(self, images, labels, fake_data=False, one_hot=False,
                dtype=tf.float32):
@@ -91,9 +89,8 @@ class DataSet(object):
       self._num_examples = 10000
       self.one_hot = one_hot
     else:
-      assert images.shape[0] == labels.shape[0], (
-          'images.shape: %s labels.shape: %s' % (images.shape,
-                                                 labels.shape))
+      assert (images.shape[0] == labels.shape[0]
+              ), f'images.shape: {images.shape} labels.shape: {labels.shape}'
       self._num_examples = images.shape[0]
       # Convert shape from [num examples, rows, columns, depth]
       # to [num examples, rows*columns] (assuming depth == 1)
@@ -124,10 +121,7 @@ class DataSet(object):
     """Return the next `batch_size` examples from this data set."""
     if fake_data:
       fake_image = [1] * 784
-      if self.one_hot:
-        fake_label = [1] + [0] * 9
-      else:
-        fake_label = 0
+      fake_label = [1] + [0] * 9 if self.one_hot else 0
       return [fake_image for _ in xrange(batch_size)], [
           fake_label for _ in xrange(batch_size)]
     start = self._index_in_epoch

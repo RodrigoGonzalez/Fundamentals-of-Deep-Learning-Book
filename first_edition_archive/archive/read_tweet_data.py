@@ -157,7 +157,13 @@ class TweetDataset:
         self.max_minibatch = max_minibatch
 
     def minibatch(self):
-        inputs, tags = np.fromstring(db.Get(self.prefix + "_inputs_" + str(self.ptr)), dtype=np.float32).reshape((-1, 200, 155)), np.fromstring(db.Get(self.prefix + "_tags_" + str(self.ptr)), dtype=np.float32).reshape((-1, 2))
+        inputs, tags = np.fromstring(
+            db.Get(f"{self.prefix}_inputs_{str(self.ptr)}"), dtype=np.float32
+        ).reshape((-1, 200, 155)), np.fromstring(
+            db.Get(f"{self.prefix}_tags_{str(self.ptr)}"), dtype=np.float32
+        ).reshape(
+            (-1, 2)
+        )
         self.ptr = (self.ptr + 1) % self.max_minibatch
         return inputs, tags
 

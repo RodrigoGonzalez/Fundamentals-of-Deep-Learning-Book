@@ -35,9 +35,8 @@ def inference(x):
     return output
 
 def loss(output, y):
-    xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)    
-    loss = tf.reduce_mean(xentropy)
-    return loss
+    xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)
+    return tf.reduce_mean(xentropy)
 
 def training(cost, global_step, optimizer):
     tf.scalar_summary("cost", cost)

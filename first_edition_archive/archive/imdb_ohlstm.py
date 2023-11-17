@@ -14,8 +14,7 @@ def embedding_layer(input, weight_shape):
     # E_tiled= tf.tile(E_exp, [32, 1, 1])
     # return tf.batch_matmul(input, E_exp)
     incoming = tf.cast(input, tf.int32)
-    embeddings = tf.nn.embedding_lookup(E, incoming)
-    return embeddings
+    return tf.nn.embedding_lookup(E, incoming)
 
 def one_hot_conversion(input):
     return tf.one_hot(tf.cast(input, tf.int32), depth=30000, axis=-1)
@@ -64,8 +63,7 @@ def layer(input, weight_shape, bias_shape, phase_train):
 def inference(input, phase_train):
     one_hot = one_hot_conversion(input)
     lstm_output = lstm(one_hot, 512, 0.5, phase_train)
-    output = layer(lstm_output, [512, 2], [2], phase_train)
-    return output
+    return layer(lstm_output, [512, 2], [2], phase_train)
 
 def loss(output, y):
     xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)
@@ -77,8 +75,7 @@ def loss(output, y):
 def training(cost, global_step):
     optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08,
         use_locking=False, name='Adam')
-    train_op = optimizer.minimize(cost, global_step=global_step)
-    return train_op
+    return optimizer.minimize(cost, global_step=global_step)
 
 def accuracy_accumulate(output, y, accuracy_accumulator, val_loss_accumulator, validation_batches):
     xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)

@@ -14,8 +14,7 @@ def embedding_layer(input, weight_shape):
     # E_tiled= tf.tile(E_exp, [32, 1, 1])
     # return tf.batch_matmul(input, E_exp)
     incoming = tf.cast(input, tf.int32)
-    embeddings = tf.nn.embedding_lookup(E, incoming)
-    return embeddings
+    return tf.nn.embedding_lookup(E, incoming)
 
 def lstm(input, hidden_dim, keep_prob, phase_train):
         lstm = BNLSTMCell(hidden_dim, phase_train)
@@ -58,8 +57,7 @@ def layer(input, weight_shape, bias_shape, phase_train):
 def inference(input, phase_train):
     embedding = embedding_layer(input, [10000, 128])
     lstm_output = lstm(embedding, 128, 0.8, phase_train)
-    output = layer(lstm_output, [128, 2], [2], phase_train)
-    return output
+    return layer(lstm_output, [128, 2], [2], phase_train)
 
 def loss(output, y):
     xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)
@@ -73,8 +71,7 @@ def training(cost, global_step):
         use_locking=False, name='Adam')
     gvs = optimizer.compute_gradients(cost)
     capped_gvs = [(None if grad is None else tf.clip_by_value(grad, -10., 10.), var) for grad, var in gvs]
-    train_op = optimizer.apply_gradients(capped_gvs, global_step=global_step)
-    return train_op
+    return optimizer.apply_gradients(capped_gvs, global_step=global_step)
 
 def evaluate(output, y):
     correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))

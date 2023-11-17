@@ -96,8 +96,7 @@ def loss(output, x):
 def training(cost, global_step):
     optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08,
         use_locking=False, name='Adam')
-    train_op = optimizer.minimize(cost, global_step=global_step)
-    return train_op
+    return optimizer.minimize(cost, global_step=global_step)
 
 def image_summary(label, tensor):
     tensor_reshaped = tf.reshape(tensor, [-1, 28, 28, 1])

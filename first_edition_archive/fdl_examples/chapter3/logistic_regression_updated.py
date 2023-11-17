@@ -33,18 +33,14 @@ def loss(output, y):
     # into a single value. In general, reduction along axis i 
     # collapses the ith dimension of a tensor to size 1.
     xentropy = -tf.reduce_sum(dot_product, axis=1)
-     
-    loss = tf.reduce_mean(xentropy)
 
-    return loss
+    return tf.reduce_mean(xentropy)
 
 def training(cost, global_step):
 
     tf.summary.scalar("cost", cost)
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    train_op = optimizer.minimize(cost, global_step=global_step)
-
-    return train_op
+    return optimizer.minimize(cost, global_step=global_step)
 
 
 def evaluate(output, y):
@@ -84,7 +80,7 @@ if __name__ == '__main__':
         summary_writer = tf.summary.FileWriter("logistic_logs/",
                                             graph_def=sess.graph_def)
 
-        
+
         init_op = tf.global_variables_initializer()
 
         sess.run(init_op)
@@ -96,7 +92,7 @@ if __name__ == '__main__':
             avg_cost = 0.
             total_batch = int(mnist.train.num_examples/batch_size)
             # Loop over all batches
-            for i in range(total_batch):
+            for _ in range(total_batch):
                 minibatch_x, minibatch_y = mnist.train.next_batch(batch_size)
                 # Fit training using batch data
                 sess.run(train_op, feed_dict={x: minibatch_x, y: minibatch_y})
